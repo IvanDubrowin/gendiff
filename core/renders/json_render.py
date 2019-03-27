@@ -1,0 +1,3 @@
+
+class JsonRender:
+    pass
