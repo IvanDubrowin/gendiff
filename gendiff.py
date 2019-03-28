@@ -17,6 +17,7 @@ from core.main import main
 if __name__ == '__main__':
     namespace = docopt(__doc__, version=__version__)
     if namespace.get('<firstConfig>') is not None:
-        main(first=namespace.get('<firstConfig>'),
+        res = main(first=namespace.get('<firstConfig>'),
              second=namespace.get('<secondConfig>'),
              format_=namespace.get('--format'))
+        print(list(res))     

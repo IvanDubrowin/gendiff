@@ -27,4 +27,15 @@ class Differ:
 
     def diff_data(self):
         result = diff(self.data[0], self.data[1])
-        return result
+
+        if result:
+            for i in result:
+                if i[0] == 'change':
+                    if self.diff.get(i[0]) is not None:
+                        self.diff[i[0]].update({i[1]: i[2]})
+                    else:
+                        self.diff[i[0]] = {i[1]: i[2]}
+                else:
+                    if isinstance(i[2], list):
+                        self.diff[i[0]] = dict(i[2])
+        return self.diff
