@@ -5,7 +5,7 @@ from collections import OrderedDict, ChainMap
 class JsonRender:
     def __init__(self, differ):
         self.data = differ.data
-        self.diff_data = differ.diff_data()
+        self.diff_data = differ.diff()
         self._template = OrderedDict()
 
     def render(self):

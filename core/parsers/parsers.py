@@ -1,5 +1,5 @@
 import json
-from dictdiffer import diff
+import hashlib
 
 
 class JsonLoader:
@@ -23,21 +23,28 @@ class YamlLoader:
 class Differ:
     def __init__(self, loader):
         self.data = loader.load()
-        self.diff = {}
+        self.result = {'change': {}, 'add': {}, 'remove': {}}
 
-    def diff_data(self):
-        result = diff(self.data[0], self.data[1])
+    def diff(self):
+        first, second = self.data
 
-        if result:
-            for i in result:
-                if i[0] == 'change':
-                    if self.diff.get(i[0]) is not None:
-                        self.diff[i[0]].update({i[1]: i[2]})
-                    else:
-                        self.diff[i[0]] = {i[1]: i[2]}
-                else:
-                    if isinstance(i[2], list):
-                        self.diff[i[0]] = dict(i[2])
-        return self.diff
+        def check(first, second):
+            first = hashlib.md5(str(first).encode('utf-8')).hexdigest()
+            second = hashlib.md5(str(second).encode('utf-8')).hexdigest()
+            if first == second:
+                return False
+            return True
 
-        
+        change = [k for k in first if k in second and check(first.get(k), second.get(k))]
+        add = [k for k in second if k not in first]
+        remove = [k for k in first if k not in second]
+        if change:
+            for k in change:
+                self.result['change'].update({k:(first.get(k), second.get(k))})
+        if add:
+            for k in add:
+                self.result['add'].update({k: second.get(k)})
+        if remove:
+            for k in remove:
+                self.result['remove'].update({k: first.get(k)})
+        return self.result
