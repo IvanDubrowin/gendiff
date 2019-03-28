@@ -1,4 +1,4 @@
-from .parsers import json_parser, yaml_parser
+from .parsers import parsers
 from .renders import json_render, plain_render, pretty_render
 
 
