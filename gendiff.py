@@ -18,6 +18,6 @@ if __name__ == '__main__':
     namespace = docopt(__doc__, version=__version__)
     if namespace.get('<firstConfig>') is not None:
         res = main(first=namespace.get('<firstConfig>'),
-             second=namespace.get('<secondConfig>'),
-             format_=namespace.get('--format'))
+                   second=namespace.get('<secondConfig>'),
+                   format_=namespace.get('--format'))
         sys.stdout.write(res)

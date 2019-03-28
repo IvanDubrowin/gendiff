@@ -1,5 +1,4 @@
 import json
-import hashlib
 
 
 class JsonLoader:
@@ -23,28 +22,58 @@ class YamlLoader:
 class Differ:
     def __init__(self, loader):
         self.data = loader.load()
-        self.result = {'change': {}, 'add': {}, 'remove': {}}
+        self.result = {
+            'change': {},
+            'add': {},
+            'remove': {},
+            'unchange': {}
+            }
 
-    def diff(self):
-        first, second = self.data
+    def unchanged(self, first, second):
+        for k in first:
+            if k in second and self.check(first.get(k), second.get(k)):
+                self.result['unchange'].update({k: first.get(k)})
 
-        def check(first, second):
-            first = hashlib.md5(str(first).encode('utf-8')).hexdigest()
-            second = hashlib.md5(str(second).encode('utf-8')).hexdigest()
-            if first == second:
-                return False
-            return True
+    def changed(self, first, second):
+        for k in first:
+            if k in second and not self.check(first.get(k), second.get(k)):
+                if not isinstance(first.get(k), dict) and \
+                        not isinstance(second.get(k), dict):
+                    self.result['change'].update({k: first.get(k)})
 
-        change = [k for k in first if k in second and check(first.get(k), second.get(k))]
-        add = [k for k in second if k not in first]
-        remove = [k for k in first if k not in second]
-        if change:
-            for k in change:
-                self.result['change'].update({k:(first.get(k), second.get(k))})
-        if add:
-            for k in add:
+    def added(self, first, second):
+        for k in second:
+            if k not in first:
                 self.result['add'].update({k: second.get(k)})
-        if remove:
-            for k in remove:
+
+    def removed(self, first, second):
+        for k in first:
+            if k not in second:
                 self.result['remove'].update({k: first.get(k)})
+
+    def nested(self, first, second):
+        for k in second:
+            if not self.check(first.get(k), second.get(k)):
+                if isinstance(first.get(k), dict) and \
+                        isinstance(second.get(k), dict):
+                    self.diff(first=first.get(k), second=second.get(k))
+
+    def diff(self, first=None, second=None):
+        if first is None and second is None:
+            first, second = self.data
+        tokens = [
+            self.unchanged,
+            self.changed,
+            self.added,
+            self.removed,
+            self.nested
+            ]
+        for token in tokens:
+            token(first, second)
         return self.result
+
+    @staticmethod
+    def check(first, second):
+        if first == second:
+            return True
+        return False
