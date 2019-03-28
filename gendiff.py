@@ -8,7 +8,7 @@
     -v --version  output the version number
     -f --format [​type​]  Output format
 '''
-
+import sys
 from docopt import docopt
 from core import __version__
 from core.main import main
@@ -20,4 +20,4 @@ if __name__ == '__main__':
         res = main(first=namespace.get('<firstConfig>'),
              second=namespace.get('<secondConfig>'),
              format_=namespace.get('--format'))
-        print(list(res))     
+        sys.stdout.write(res)

@@ -8,6 +8,7 @@ def main(first, second, format_=None):
         if first.endswith('json') and second.endswith('json'):
             loader = parsers.JsonLoader(first, second)
             diff = parsers.Differ(loader)
-            return diff.diff_data()
+            template = json_render.JsonRender(diff)
+            return template.render()
     except AttributeError:
         raise FileFormatError

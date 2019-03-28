@@ -39,3 +39,5 @@ class Differ:
                     if isinstance(i[2], list):
                         self.diff[i[0]] = dict(i[2])
         return self.diff
+
+        
