@@ -1,45 +1,43 @@
 import json
 from collections import OrderedDict, ChainMap
 
+KEYS = [
+    'unchange',
+    'change',
+    'add',
+    'remove'
+]
 
 class JsonRender:
     def __init__(self, differ):
-        self.data = differ.data
-        self.diff_data = differ.diff()
-        self._template = OrderedDict()
+        self.diff = differ.diff()
 
-    def render(self):
-        if self.diff_data.get('change') is not None:
-            change_dict = self.diff_data.get('change')
-        else:
-            change_dict = {}
+    def render(self, diff=None):
+        if diff is None:
+            diff = self.diff
+        _template = {}
 
-        if self.diff_data.get('add') is not None:
-            add_dict = self.diff_data.get('add')
-        else:
-            add_dict = {}
-
-        if self.diff_data.get('remove') is not None:
-            remove_dict = self.diff_data.get('remove')
-        else:
-            remove_dict = {}
-
-        chain = ChainMap(change_dict, add_dict, remove_dict)
-        for key in self.data[0]:
-            if key not in chain:
-                self._template.update({key: self.data[0][key]})
-
-        if change_dict:
-            for item in change_dict.items():
-                self._template.update({'+ '+ item[0]: item[1][1]})
-                self._template.update({'- '+ item[0]: item[1][0]})
-
-        if add_dict:
-            for item in add_dict.items():
-                self._template.update({'+ '+ item[0]: item[1]})
-
-        if remove_dict:
-            for item in remove_dict.items():
-                self._template.update({'- '+ item[0]: item[1]})
-
-        return json.dumps(dict(self._template), indent=2)
+        for k in diff:
+            if k == 'unchange' and not isinstance(diff.get(k), dict):
+                _template.update({k: diff.get(k)})
+            elif k == 'unchange' and isinstance(diff.get(k), dict)\
+                and diff.get(k) is not None:
+                print(diff.get(k))
+                _template.update({self.render(diff=diff.get(k))})
+            elif k == 'change':
+                if diff.get('change'):
+                    change_dict = self.get('change')
+                    for item in change_dict.items():
+                        _template.update({'+ '+ item[0]: item[1]})
+                        _template.update({'- '+ item[0]: item[1]})
+            elif k == 'add':
+                if diff.get('add'):
+                    add_dict = diff.get('add')
+                    for item in add_dict.items():
+                        _template.update({'+ '+ item[0]: item[1]})
+            elif k == 'remove':
+                if diff.get('remove'):
+                    remove_dict = diff.get('remove')
+                    for item in remove_dict.items():
+                        _template.update({'- '+ item[0]: item[1]})
+        return json.dumps(_template, indent=2)
