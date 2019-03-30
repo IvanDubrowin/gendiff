@@ -1,43 +1,35 @@
-import json
-from collections import OrderedDict, ChainMap
-
-KEYS = [
-    'unchange',
-    'change',
-    'add',
-    'remove'
-]
-
 class JsonRender:
-    def __init__(self, differ):
-        self.diff = differ.diff()
+    def __init__(self, _ast):
+        self._ast = _ast.parse()
 
-    def render(self, diff=None):
-        if diff is None:
-            diff = self.diff
-        _template = {}
-
-        for k in diff:
-            if k == 'unchange' and not isinstance(diff.get(k), dict):
-                _template.update({k: diff.get(k)})
-            elif k == 'unchange' and isinstance(diff.get(k), dict)\
-                and diff.get(k) is not None:
-                print(diff.get(k))
-                _template.update({self.render(diff=diff.get(k))})
-            elif k == 'change':
-                if diff.get('change'):
-                    change_dict = self.get('change')
-                    for item in change_dict.items():
-                        _template.update({'+ '+ item[0]: item[1]})
-                        _template.update({'- '+ item[0]: item[1]})
-            elif k == 'add':
-                if diff.get('add'):
-                    add_dict = diff.get('add')
-                    for item in add_dict.items():
-                        _template.update({'+ '+ item[0]: item[1]})
-            elif k == 'remove':
-                if diff.get('remove'):
-                    remove_dict = diff.get('remove')
-                    for item in remove_dict.items():
-                        _template.update({'- '+ item[0]: item[1]})
-        return json.dumps(_template, indent=2)
+    def render(self, _ast=None, template=''):
+        if _ast is None:
+            _ast = self._ast
+        if isinstance(_ast, list):
+            for node in _ast:
+                if node.get('__type__') == 'added':
+                    res = '\n\t+ {}: {}'.format(
+                        node.get('__key__'), node.get('__new__'))
+                    template += res
+                elif node.get('__type__') == 'removed':
+                    res = '\n\t- {}: {}'.format(
+                        node.get('__key__'), node.get('__old__'))
+                    template += res
+                elif node.get('__type__') == 'changed':
+                    res = '\n\t+ {}: {}\n\t- {}: {}'.format(
+                        node.get('__key__'), node.get('__new__'),
+                        node.get('__key__'), node.get('__old__')
+                        )
+                    template += res
+                elif node.get('__type__') == 'nested':
+                    if node.get('__child__') is not None:
+                        res = '\n{}: {}'.format(
+                            node.get('__key__'),
+                            self.render(_ast=node.get('__child__'))
+                            )
+                        template += res
+                elif node.get('__type__') == 'unchanged':
+                    res = '\n\t{}: {}'.format(
+                        node.get('__key__'), node.get('__old__'))
+                    template += res
+        return '{' + template + '\n}'

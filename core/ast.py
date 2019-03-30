@@ -11,11 +11,11 @@ class AST:
     @staticmethod
     def node(key, type_, old, new, child):
         n = {
-            'key': key,
-            'type': type_,
-            'old': old,
-            'new': new,
-            'child': child
+            '__key__': key,
+            '__type__': type_,
+            '__old__': old,
+            '__new__': new,
+            '__child__': child
         }
         return n
 
