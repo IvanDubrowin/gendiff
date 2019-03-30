@@ -1,11 +1,19 @@
 import json
+import yaml
+from abc import ABC, abstractmethod
 
 
-class JsonLoader:
+class AbstractLoader(ABC):
     def __init__(self, first, second):
         self.first = first
         self.second = second
 
+    @abstractmethod
+    def load(self):
+        raise NotImplementedError
+
+
+class JsonLoader(AbstractLoader):
     def load(self):
         with open(self.first, 'r') as f:
             first = json.load(f)
@@ -15,5 +23,12 @@ class JsonLoader:
         return first, second
 
 
-class YamlLoader:
-    pass
+class YamlLoader(AbstractLoader):
+    def load(self):
+        with open(self.first) as f:
+            first = yaml.load(f)
+
+        with open(self.second) as f:
+            second = yaml.load(f)
+
+        return first, second

@@ -2,29 +2,6 @@ class AST:
     def __init__(self, loader):
         self.data = loader.load()
 
-    @staticmethod
-    def check(first, second):
-        if first == second:
-            return True
-        return False
-
-    @staticmethod
-    def node(key, type_, old, new, child):
-        n = {
-            '__key__': key,
-            '__type__': type_,
-            '__old__': old,
-            '__new__': new,
-            '__child__': child
-        }
-        return n
-
-    @staticmethod
-    def is_nested(first, second):
-        if isinstance(first, dict) and isinstance(second, dict):
-            return True
-        return False
-
     def switch(self, key, first, second):
         if self.is_nested(first.get(key), second.get(key)):
             child = self.parse(first.get(key), second.get(key))
@@ -57,3 +34,26 @@ class AST:
                 lambda k: self.switch(
                     k, first=first, second=second), all_keys))
         return res
+
+    @staticmethod
+    def check(first, second):
+        if first == second:
+            return True
+        return False
+
+    @staticmethod
+    def node(key, type_, old, new, child):
+        n = {
+            '__key__': key,
+            '__type__': type_,
+            '__old__': old,
+            '__new__': new,
+            '__child__': child
+        }
+        return n
+
+    @staticmethod
+    def is_nested(first, second):
+        if isinstance(first, dict) and isinstance(second, dict):
+            return True
+        return False
