@@ -9,5 +9,10 @@ setup(
    author='Ivan Dubrovin',
    url='https://github.com/IvanDubrowin/gendiff',
    author_email='ivandubrovin2@mail.ru',
-   packages=find_packages()
+   packages=find_packages(),
+   package_data ={
+    'gendiff': ['*']
+   },
+   test_suite='tests',
+   include_package_data=True,
 )
