@@ -1,6 +1,6 @@
 import json
 from collections import OrderedDict
-from .pretty_render import PrettyRender
+
 
 class JsonRender():
     def __init__(self, _ast):
