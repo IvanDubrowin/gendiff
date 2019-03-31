@@ -20,8 +20,4 @@ if __name__ == '__main__':
         res = main(first=namespace.get('<firstConfig>'),
                    second=namespace.get('<secondConfig>'),
                    format_=namespace.get('--format'))
-        if isinstance(res, list):
-            for line in res:
-                sys.stdout.write(line)
-        else:
-            sys.stdout.write(res)
+        sys.stdout.write(res)

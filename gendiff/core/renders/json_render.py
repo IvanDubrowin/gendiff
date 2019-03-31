@@ -25,8 +25,11 @@ class JsonRender():
                     self._template.update(res)
                 elif node.get('__type__') == 'nested':
                     if node.get('__child__') is not None:
-                        res = {node.get('__key__'):
-                            self.parse(_ast=node.get('__child__'))}
+                        res = {
+                            node.get('__key__'): self.parse(
+                                _ast=node.get('__child__')
+                                )
+                            }
                         self._template.update(res)
                 elif node.get('__type__') == 'unchanged':
                     res = {node.get('__key__'): node.get('__old__')}

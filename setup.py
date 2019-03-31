@@ -8,6 +8,7 @@ def test_suite():
     test_suite = test_loader.discover('tests', pattern='tests.py')
     return test_suite
 
+
 setup(
    name='gendiff',
    version=__version__,
@@ -16,9 +17,7 @@ setup(
    url='https://github.com/IvanDubrowin/gendiff',
    author_email='ivandubrovin2@mail.ru',
    packages=find_packages(exclude=['tests', '*.tests', '*.tests.*']),
-   package_data ={
-    'gendiff': ['*']
-   },
+   package_data={'gendiff': ['*']},
    test_suite='setup.test_suite',
    include_package_data=True,
-)
+   )
