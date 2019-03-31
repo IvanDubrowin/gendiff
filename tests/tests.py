@@ -2,6 +2,7 @@ import unittest
 from core.main import main
 from .fixtures import results
 
+
 class TestGendiff(unittest.TestCase):
     def test_json_pretty(self):
         res = main(
